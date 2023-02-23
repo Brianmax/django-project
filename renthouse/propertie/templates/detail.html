@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li>Contacto</li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class = "detail-house">
+            <ul>
+                <li>{{ house }}</li>
+                <li>
+                    <ul>
+                        {% for appartment in appartments %}
+                        <li>{{ appartment }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </main>
+    <a href="{% url 'propertie:update' house.id %}">Edit</a>
+    <a href="{% url 'propertie:deleteItem' %}">Remove</a>
+    <a href="{% url 'propertie:createAppartment' house.id %}">Add appartment</a>
+</body>
+</html>
