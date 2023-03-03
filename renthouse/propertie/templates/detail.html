@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{ titulo }}</title>
 </head>
 <body>
     <header>
@@ -16,20 +16,18 @@
     </header>
     <main>
         <div class = "detail-house">
+            <h1>{{ house }}</h1>
+            <h2>Lista de departamentos</h2>
             <ul>
-                <li>{{ house }}</li>
-                <li>
-                    <ul>
-                        {% for appartment in appartments %}
-                        <li>{{ appartment }}</li>
-                        {% endfor %}
-                    </ul>
-                </li>
+               {% for appartment in appartments %}
+                    <li>{{ appartment }}</li>
+                {% endfor %}
             </ul>
         </div>
     </main>
     <a href="{% url 'propertie:update' house.id %}">Edit</a>
     <a href="{% url 'propertie:deleteItem' %}">Remove</a>
     <a href="{% url 'propertie:createAppartment' house.id %}">Add appartment</a>
+    <a href="{% url 'propertie:recibos' house.id %}">Recibos Servicios</a>
 </body>
 </html>

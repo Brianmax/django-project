@@ -1,6 +1,9 @@
 from django.db import models
+from django.contrib import admin
+from django.db.models import Model
 
 # Create your models here.
+
 class Casa(models.Model):
     street = models.CharField(max_length = 50)
     city = models.CharField(max_length = 50)
@@ -20,8 +23,10 @@ class Departamento(models.Model):
 
 class Recibo(models.Model):
     departamento = models.ForeignKey(Casa, on_delete=models.CASCADE)
-    type = models.CharField(max_length=20)
+    tipo = models.CharField(max_length=20)
     cantidad = models.SmallIntegerField(default=0)
+    expired_date = models.DateField(null=True)
+    emmited_date = models.DateField(null=True)
 
 
 class Arrendatario(models.Model):
@@ -36,3 +41,6 @@ class Contrato(models.Model):
     name = models.CharField(max_length=25)
     lastname = models.CharField(max_length=25)
     adress = models.CharField(max_length=150)
+
+
+

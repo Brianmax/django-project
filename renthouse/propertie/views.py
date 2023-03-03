@@ -1,18 +1,47 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-# Create your views here.
 from . forms import *
 from . models import *
-def index(request):
-    items = Casa.objects.all()
-    return render(request, "index.html", {"items": items})
+from django.views import generic
+from django.views.generic.detail import DetailView
+from django.views.generic import *
+
+# Create your views here.
+#def index(request):
+#    items = Casa.objects.all()
+#    titulo = "Propiedades"
+#    return render(request, "index.html", {"items": items, "titulo": titulo})
 
 
-def detail(request, casa_id):
-    house = Casa.objects.get(pk = casa_id)
-    appartments = house.departamento_set.all()
-    return render(request, "detail.html", {"house": house, 
-                                           "appartments": appartments})
+#def detail(request, casa_id):
+#    house = Casa.objects.get(pk = casa_id)
+#    appartments = house.departamento_set.all()
+#    return render(request, "detail.html", {"house": house, 
+#                                           "appartments": appartments})
+
+
+class IndexView(generic.ListView):
+    model = Casa
+    template_name = "index.html"
+    context_object_name = "houses"
+
+    #def get_context_data(self, **kwargs):
+    #    context = super().get_context_data(**kwargs)
+    #    print(context)
+    #    return context
+
+    
+class CasaDetailView(DetailView):
+    model = Casa
+    template_name = "detail.html"
+    context_object_name = "house"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["appartments"] = self.object.departamento_set.all()
+        context["titulo"] = "Detail"
+        return context
+
 
 
 def create(request):
@@ -27,6 +56,12 @@ def create(request):
             new_house.city = city
             new_house.save()
     return render(request, "create.html", {"form": form})
+
+
+class PropertieCreateView(CreateView):
+    model = Departamento
+    template_name = "create.html"
+    form_class = CreateHouse
 
 
 def update(request, casa_id):
@@ -54,9 +89,9 @@ def createLeaseholder(request, casa_id, departamento_id):
 
 def createAppartment(request, casa_id):
     appartment = Departamento()
-    form = Appartment()
+    form = AppartmentForm()
     if request.method == "POST":
-        form = Appartment(request.POST)
+        form = AppartmentForm(request.POST)
         if form.is_valid():
             house = Casa.objects.get(pk = casa_id)
             appartment.price = form.cleaned_data["price"]
@@ -65,3 +100,30 @@ def createAppartment(request, casa_id):
             appartment.casa = house
             appartment.save()
     return render(request, "createAppartment.html", {"form": form})
+
+
+def recibosLista(request, casa_id):
+    house = Casa.objects.get(pk = casa_id)
+    recibos = house.recibo_set.all()
+    return render(request, "recibos.html",
+                  {"house": house, "recibos": recibos})
+
+
+def createRecibo(request, casa_id):
+    house = Casa.objects.get(pk = casa_id)
+    form = ReciboForm()
+    recibo = Recibo()
+    if request.method == "POST":
+        form = ReciboForm(request.POST)
+        if form.is_valid():
+            recibo.departamento = house
+            recibo.tipo = form.cleaned_data["tipo"]
+            recibo.emmited_date = form.cleaned_data["emitted_date"]
+            recibo.expired_date = form.cleaned_data["expired_date"]
+            recibo.save()
+    return render(request, "createRecibo.html", 
+                  {"form": form, "house": house})
+
+
+def detailRecibo(request, recibo_id):
+    return HttpResponse("Detalle de recibo")

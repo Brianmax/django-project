@@ -7,6 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Create propertie</h1>
+    <h1>Lista de recibos</h1>
+    {% for recibo in recibos %}
+        <ul>
+            <li> {{ recibo }}</li>
+        </ul>
+    {% endfor %}
+    <a href="{% url 'propertie:createRecibo' house.id %}">Add recibo</a>
 </body>
 </html>
