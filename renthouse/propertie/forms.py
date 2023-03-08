@@ -1,16 +1,46 @@
 from django import forms
 from django.forms.widgets import NumberInput
-
-class CreateHouse(forms.Form):
-    street = forms.CharField(max_length=50)
-    city = forms.CharField(max_length=50)
+from . models import *
 
 
-class AppartmentForm(forms.Form):
-    price = forms.IntegerField()
-    rooms = forms.IntegerField()
-    size = forms.IntegerField()
+class FormHouse(forms.ModelForm):
+    class Meta:
+        model = Casa
 
+        fields = [
+            "street",
+            "city"
+        ]
+
+        labels = {
+            "street": "Street",
+            "city": "City"
+        }
+
+        widgets = {
+            "street": forms.TextInput(),
+            "city": forms.TextInput()
+        }
+
+class AppartmentForm(forms.ModelForm):
+    class Meta:
+        model = Departamento
+
+        fields = [
+            "price",
+            "rooms",
+            "size"
+        ]
+        labels = {
+            "price": "Price",
+            "rooms": "Rooms",
+            "size": "Size"
+        }
+        widgets = {
+            "price": forms.NumberInput(),
+            "rooms": forms.NumberInput(),
+            "size": forms.NumberInput()
+        }
 
 class ReciboForm(forms.Form):
     tipo = forms.CharField(max_length=20)

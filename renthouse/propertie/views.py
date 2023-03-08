@@ -5,6 +5,8 @@ from . models import *
 from django.views import generic
 from django.views.generic.detail import DetailView
 from django.views.generic import *
+from django.urls import reverse_lazy
+
 
 # Create your views here.
 #def index(request):
@@ -44,30 +46,36 @@ class CasaDetailView(DetailView):
 
 
 
-def create(request):
-    form = CreateHouse()
-    if request.method == "POST":
-        form = CreateHouse(request.POST)
-        if form.is_valid():
-            street = form.cleaned_data["street"]
-            city = form.cleaned_data["city"]
-            new_house = Casa()
-            new_house.street = street
-            new_house.city = city
-            new_house.save()
-    return render(request, "create.html", {"form": form})
+#def create(request):
+#    form = CreateHouse()
+#    if request.method == "POST":
+#        form = CreateHouse(request.POST)
+#        if form.is_valid():
+#            street = form.cleaned_data["street"]
+#            city = form.cleaned_data["city"]
+#            new_house = Casa()
+#            new_house.street = street
+#            new_house.city = city
+#            new_house.save()
+#    return render(request, "create.html", {"form": form})
 
 
 class PropertieCreateView(CreateView):
-    model = Departamento
+    model = Casa
     template_name = "create.html"
-    form_class = CreateHouse
+    form_class = FormHouse
+    success_url = reverse_lazy("propertie:index")
+
+    #   def form_valid(self, form):
+    #    response = super().form_valid(form)
+    #    return self.render_to_response(self.get_context_data(form = form))
+
 
 
 def update(request, casa_id):
-    form = CreateHouse()
+    form = FormHouse()
     if request.method == "POST":
-        form = CreateHouse(request.POST)
+        form = FormHouse(request.POST)
         if form.is_valid():
             house = Casa.objects.get(pk = casa_id)
             house.street = form.cleaned_data["street"]
@@ -75,6 +83,12 @@ def update(request, casa_id):
             house.save()
     return render(request, "update.html", {"form": form})
 
+
+class HouseUpdateView(UpdateView):
+    model = Casa
+    template_name = "update.html"
+    form_class = FormHouse
+    success_url = reverse_lazy("propertie:index")
 
 def deleteItem(request, casa_id):
     to_remove = Casa.objects.get(pk = casa_id)
@@ -101,6 +115,21 @@ def createAppartment(request, casa_id):
             appartment.save()
     return render(request, "createAppartment.html", {"form": form})
 
+
+class CreateAppartmentView(CreateView):
+    model = Departamento
+    template_name = "createAppartment.html"
+    form_class = AppartmentForm
+    success_url = "succes.html"
+
+    def form_valid(self, form):
+        appartment = form.save(commit = False)
+        print(self.kwargs["pk"])
+        casaInstance = Casa.objects.get(pk = self.kwargs["pk"])
+        appartment.casa = casaInstance
+        appartment.save()
+        return super().form_valid(form)
+    
 
 def recibosLista(request, casa_id):
     house = Casa.objects.get(pk = casa_id)
