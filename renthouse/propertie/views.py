@@ -9,17 +9,6 @@ from django.urls import reverse_lazy
 
 
 # Create your views here.
-#def index(request):
-#    items = Casa.objects.all()
-#    titulo = "Propiedades"
-#    return render(request, "index.html", {"items": items, "titulo": titulo})
-
-
-#def detail(request, casa_id):
-#    house = Casa.objects.get(pk = casa_id)
-#    appartments = house.departamento_set.all()
-#    return render(request, "detail.html", {"house": house, 
-#                                           "appartments": appartments})
 
 
 class IndexView(generic.ListView):
@@ -43,21 +32,6 @@ class CasaDetailView(DetailView):
         context["appartments"] = self.object.departamento_set.all()
         context["titulo"] = "Detail"
         return context
-
-
-
-#def create(request):
-#    form = CreateHouse()
-#    if request.method == "POST":
-#        form = CreateHouse(request.POST)
-#        if form.is_valid():
-#            street = form.cleaned_data["street"]
-#            city = form.cleaned_data["city"]
-#            new_house = Casa()
-#            new_house.street = street
-#            new_house.city = city
-#            new_house.save()
-#    return render(request, "create.html", {"form": form})
 
 
 class PropertieCreateView(CreateView):
@@ -90,16 +64,6 @@ class HouseUpdateView(UpdateView):
     form_class = FormHouse
     success_url = reverse_lazy("propertie:index")
 
-def deleteItem(request, casa_id):
-    to_remove = Casa.objects.get(pk = casa_id)
-    print("Delete operation has began")
-    to_remove.delete()
-    return render(request, "index.html")
-
-
-def createLeaseholder(request, casa_id, departamento_id):
-    pass
-
 
 def createAppartment(request, casa_id):
     appartment = Departamento()
@@ -125,34 +89,102 @@ class CreateAppartmentView(CreateView):
     def form_valid(self, form):
         appartment = form.save(commit = False)
         print(self.kwargs["pk"])
-        casaInstance = Casa.objects.get(pk = self.kwargs["pk"])
+        casaInstance = Casa.object.get(pk = self.kwargs["pk"])
         appartment.casa = casaInstance
         appartment.save()
         return super().form_valid(form)
     
 
-def recibosLista(request, casa_id):
-    house = Casa.objects.get(pk = casa_id)
-    recibos = house.recibo_set.all()
-    return render(request, "recibos.html",
-                  {"house": house, "recibos": recibos})
+
+class recibosLista(ListView):
+    model = Recibo
+    template_name = "recibos.html"
+    context_object_name = "recibos"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["house"] = Casa.objects.get(pk = self.kwargs["pk"])
+        return context
+    
+    def get_queryset(self):
+        casa = Casa.objects.get(pk = self.kwargs["pk"])
+        listaRecibos = casa.recibo_set.all()
+        return listaRecibos
 
 
-def createRecibo(request, casa_id):
-    house = Casa.objects.get(pk = casa_id)
-    form = ReciboForm()
-    recibo = Recibo()
-    if request.method == "POST":
-        form = ReciboForm(request.POST)
-        if form.is_valid():
-            recibo.departamento = house
-            recibo.tipo = form.cleaned_data["tipo"]
-            recibo.emmited_date = form.cleaned_data["emitted_date"]
-            recibo.expired_date = form.cleaned_data["expired_date"]
-            recibo.save()
-    return render(request, "createRecibo.html", 
-                  {"form": form, "house": house})
+class CreateReciboView(CreateView):
+    model = Recibo
+    template_name = "createRecibo.html"
+    form_class = ReciboForm
+    
+    def form_valid(self, form):
+        recibo = form.save(commit=False)
+        casa = Casa.objects.get(pk = self.kwargs["pk"])
+        recibo.casa = casa
+        recibo.save()
+        return super().form_valid(form)
 
 
-def detailRecibo(request, recibo_id):
-    return HttpResponse("Detalle de recibo")
+class DetailReciboView(DetailView):
+    model = Recibo
+    template_name = "detailRecibo.html"
+    context_object_name = "recibo"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print("This is kwargs")
+        print(self.kwargs)
+        recibo = Recibo.objects.get(pk = self.kwargs["pk_r"])
+        context["recibo"] = recibo
+        return context
+
+
+
+#def index(request):
+#    items = Casa.objects.all()
+#    titulo = "Propiedades"
+#    return render(request, "index.html", {"items": items, "titulo": titulo})
+
+
+#def detail(request, casa_id):
+#    house = Casa.objects.get(pk = casa_id)
+#    appartments = house.departamento_set.all()
+#    return render(request, "detail.html", {"house": house, 
+#                                           "appartments": appartments})
+
+
+#def create(request):
+#    form = CreateHouse()
+#    if request.method == "POST":
+#        form = CreateHouse(request.POST)
+#        if form.is_valid():
+#            street = form.cleaned_data["street"]
+#            city = form.cleaned_data["city"]
+#            new_house = Casa()
+#            new_house.street = street
+#            new_house.city = city
+#            new_house.save()
+#    return render(request, "create.html", {"form": form})
+
+
+#def recibosLista(request, casa_id):
+#    house = Casa.objects.get(pk = casa_id)
+#    recibos = house.recibo_set.all()
+#    return render(request, "recibos.html",
+#                  {"house": house, "recibos": recibos})
+
+
+#def createRecibo(request, casa_id):
+#    house = Casa.objects.get(pk = casa_id)
+#    form = ReciboForm()
+#    recibo = Recibo()
+#    if request.method == "POST":
+#        form = ReciboForm(request.POST)
+#        if form.is_valid():
+#            recibo.departamento = house
+#            recibo.tipo = form.cleaned_data["tipo"]
+#            recibo.emmited_date = form.cleaned_data["emitted_date"]
+#            recibo.expired_date = form.cleaned_data["expired_date"]
+#            recibo.save()
+#    return render(request, "createRecibo.html", 
+#                  {"form": form, "house": house})

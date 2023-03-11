@@ -42,8 +42,32 @@ class AppartmentForm(forms.ModelForm):
             "size": forms.NumberInput()
         }
 
-class ReciboForm(forms.Form):
-    tipo = forms.CharField(max_length=20)
-    cantidad = forms.IntegerField()
-    emitted_date = forms.DateField(widget=NumberInput(attrs = {"type": "date"}))
-    expired_date = forms.DateField(widget=NumberInput(attrs = {"type": "date"}))
+#class ReciboForm(forms.Form):
+#    tipo = forms.CharField(max_length=20)
+#    cantidad = forms.IntegerField()
+#    emitted_date = forms.DateField(widget=NumberInput(attrs = {"type": "date"}))
+#    expired_date = forms.DateField(widget=NumberInput(attrs = {"type": "date"}))
+
+
+class ReciboForm(forms.ModelForm):
+    class Meta:
+        model = Recibo
+
+        fields = [
+            "tipo",
+            "cantidad",
+            "expired_date",
+            "emmited_date"
+            ]
+        labels = {
+            "tipo":"Tipo",
+            "cantidad": "Cantidad",
+            "expired_date": "Expired Date",
+            "emmited_date": "Emitted Date"
+        }
+        widgets = {
+            "tipo": forms.NumberInput(),
+            "cantidad": forms.NumberInput(),
+            "expired_date": forms.DateInput(),
+            "emmited_date": forms.DateInput()
+        }

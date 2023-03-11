@@ -22,11 +22,14 @@ class Departamento(models.Model):
 
 
 class Recibo(models.Model):
-    departamento = models.ForeignKey(Casa, on_delete=models.CASCADE)
+    casa = models.ForeignKey(Casa, on_delete=models.CASCADE)
     tipo = models.CharField(max_length=20)
     cantidad = models.SmallIntegerField(default=0)
     expired_date = models.DateField(null=True)
     emmited_date = models.DateField(null=True)
+
+    def __str__(self):
+        return str(self.cantidad)
 
 
 class Arrendatario(models.Model):
